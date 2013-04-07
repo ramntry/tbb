@@ -15,7 +15,7 @@ protected:
     typedef Vector::iterator Iter;
 
     static size_t const smallSize = 10*1000;
-    static size_t const bigSize = 3*1000*1000;
+    static size_t const bigSize = 5*1000*1000;
 
     virtual void SetUp()
     {

@@ -1,11 +1,11 @@
 PROG_NAME = quicksort
 
-GTEST_HOME = /home/ramntry/gtest/gtest-1.6.0
-BOOST_HOME = /home/ramntry/boost/boost_1_52_0
+GTEST_HOME = /home/ramntry/libraries/gtest/gtest-1.6.0
+BOOST_HOME = /home/ramntry/libraries/boost/boost_1_53_0
 
-TBB_INIT_COMMAND = /home/ramntry/projects/tbb/tbb/bin/tbbvars.sh intel64
+TBB_INIT_COMMAND = /home/ramntry/libraries/tbb/tbb41_20130314oss/bin/tbbvars.sh intel64
 
-COMPILER = g++-4.7 -std=c++11
+COMPILER = g++ -std=c++11
 OPTS = -Wall -O2 -pthread
 
 INCLUDE_PATHS = \
@@ -13,7 +13,7 @@ INCLUDE_PATHS = \
 	-I ${BOOST_HOME}
 
 LIBRARIES = \
-	${GTEST_HOME}/build/libgtest.a \
+	${GTEST_HOME}/lib/.libs/libgtest.a \
 	-ltbb \
 	-lrt
 
@@ -26,3 +26,4 @@ HEADERS = \
 ${PROG_NAME}: ${SOURCES} ${HEADERS}
 	${TBB_INIT_COMMAND}
 	${COMPILER} ${OPTS} ${INCLUDE_PATHS} ${SOURCES} -o $@ ${LIBRARIES}
+
