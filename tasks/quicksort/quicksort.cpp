@@ -65,18 +65,22 @@ template <typename RAIter>
 class QuickSortTask : public tbb::task
 {
 public:
-    QuickSortTask(RAIter first, RAIter last)
+    QuickSortTask(RAIter first, RAIter last, int myDepth = 0)
         : first_(first)
         , last_(last)
+        , myDepth_(myDepth)
     {}
+    int myDepth() const { return myDepth_; }
 
     virtual tbb::task *execute();
 
     static long const cutOff = 2000;
+    static int const numofCPUs = 3;
 
 private:
     RAIter first_;
     RAIter last_;
+    int myDepth_;
 };
 
 template <typename RAIter>
@@ -86,9 +90,14 @@ tbb::task *QuickSortTask<RAIter>::execute()
         quickSort(first_, last_);
         return nullptr;
     }
+    tbb::tick_count startTime = tbb::tick_count::now();
     RAIter border = quickSplit(first_, last_);
-    QuickSortTask<RAIter> &a = *new(allocate_child()) QuickSortTask<RAIter>(first_, border);
-    QuickSortTask<RAIter> &b = *new(allocate_child()) QuickSortTask<RAIter>(++border, last_);
+    if (myDepth() < numofCPUs) {
+        printf("Time elapsed by quickSplit on depth %d is %.0lf ms\n"
+                , myDepth(), 1000.0 * (tbb::tick_count::now() - startTime).seconds());
+    }
+    QuickSortTask<RAIter> &a = *new(allocate_child()) QuickSortTask<RAIter>(first_, border, myDepth() + 1);
+    QuickSortTask<RAIter> &b = *new(allocate_child()) QuickSortTask<RAIter>(++border, last_, myDepth() + 1);
     set_ref_count(3);
     spawn(a);
     spawn_and_wait_for_all(b);
